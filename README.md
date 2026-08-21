@@ -1,2 +1,2 @@
-# AI-Healthcare-Patient-Journey-Follow-Up-Coordination-Agent
-Patients may interact with registration, consultation, diagnostics, pharmacy, specialist referrals and follow-up services. Fragmented administrative information can cause delays and missed follow-ups.
+# AI-Campus-Placement-Operations-Interview-Coordination-Agent
+Develop an AI placement operations agent that coordinates the workflow from company requirements through eligibility verification, candidate matching, interview scheduling and event reporting, while retaining human control over final selection.
