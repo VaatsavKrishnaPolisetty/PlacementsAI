@@ -1,0 +1,418 @@
+body {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0.64)),
+    radial-gradient(circle at 12% 8%, rgba(255, 107, 61, 0.16), transparent 30%),
+    radial-gradient(circle at 88% 82%, rgba(49, 166, 125, 0.14), transparent 32%),
+    #eef2f0;
+}
+
+.shell {
+  position: relative;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.28) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 33, 43, 0.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.shell::before,
+.shell::after {
+  content: '';
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  border: 1px solid rgba(255, 107, 61, 0.18);
+  transform: rotate(18deg);
+}
+
+.shell::before {
+  width: 280px;
+  height: 280px;
+  top: -130px;
+  right: 12%;
+  border-radius: 42% 58% 55% 45%;
+}
+
+.shell::after {
+  width: 180px;
+  height: 180px;
+  bottom: 9%;
+  left: 19%;
+  border-color: rgba(44, 157, 112, 0.16);
+  border-radius: 58% 42% 38% 62%;
+}
+
+.shell aside,
+.shell main {
+  position: relative;
+  z-index: 1;
+}
+
+.shell aside {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px);
+}
+
+.shell main {
+  background: rgba(244, 246, 245, 0.58);
+}
+
+header,
+.metric,
+.table-panel,
+.notice-panel,
+.details > div {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+}
+
+.hero {
+  background:
+    linear-gradient(120deg, rgba(24, 36, 45, 0.98), rgba(30, 55, 59, 0.96)),
+    repeating-linear-gradient(135deg, transparent 0 18px, rgba(255, 255, 255, 0.035) 19px 20px);
+  box-shadow: 0 18px 45px rgba(24, 36, 45, 0.15);
+}
+
+.hero::after {
+  content: 'SCHEDULING / NEGOTIATION / APPROVAL';
+  position: absolute;
+  right: 30px;
+  bottom: 15px;
+  color: rgba(255, 255, 255, 0.18);
+  font: 700 9px 'Space Grotesk';
+  letter-spacing: 2px;
+}
+
+.table-panel,
+.notice-panel,
+.metric,
+.student-card,
+.details,
+.request-callout {
+  box-shadow: 0 10px 30px rgba(23, 33, 43, 0.045);
+}
+
+@media (max-width: 700px) {
+  .shell::before {
+    right: -120px;
+  }
+
+  .shell::after {
+    left: -80px;
+  }
+
+  .hero::after {
+    right: 20px;
+    font-size: 7px;
+  }
+}
+
+/* High-contrast operations theme */
+body,
+.shell,
+.shell main,
+.shell aside,
+header,
+.metric,
+.table-panel,
+.notice-panel,
+.student-card,
+.details > div,
+.modal,
+.request-callout {
+  background: #050505 !important;
+  color: #f4f7f5;
+}
+
+body,
+button,
+input,
+select,
+textarea,
+.shell,
+.shell * {
+  font-family: 'Lucida Sans Unicode', 'Lucida Grande', sans-serif !important;
+}
+
+.shell main {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    #050505 !important;
+  background-size: 32px 32px;
+}
+
+header,
+.metric,
+.table-panel,
+.notice-panel,
+.student-card,
+.details,
+.request-callout,
+.modal,
+.switcher,
+.icon,
+.filter,
+.role,
+.role button:not(.on),
+.nav-group button:hover {
+  border-color: #272727 !important;
+}
+
+.metric,
+.table-panel,
+.notice-panel,
+.details,
+.request-callout,
+.modal,
+.switcher {
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+}
+
+.brand strong,
+.crumb b,
+.nav-group button,
+.metric > span,
+.metric > b,
+.panel-head h2,
+.section-heading h2,
+td,
+td b,
+th,
+.notice b,
+.details b,
+.request-callout h3,
+.modal h2,
+.modal h3,
+.option b,
+.compare b,
+.profile b {
+  color: #f4f7f5;
+}
+
+.muted,
+td small,
+.metric > small,
+.notice small,
+.details small,
+.request-callout p,
+.sub,
+.compare span,
+.option small,
+.section-heading > span,
+.profile small,
+.switcher,
+.crumb,
+th {
+  color: #899391;
+}
+
+th,
+td,
+.details > div,
+.notice,
+.student-event,
+.option,
+.compare,
+.modal-section,
+.profile,
+.filter,
+.icon {
+  border-color: #272727 !important;
+}
+
+tbody tr:hover,
+.student-event:hover {
+  background: #111 !important;
+}
+
+.status.approved,
+.status.scheduled,
+.status.rescheduled {
+  background: #103a2a !important;
+  color: #5ee0a4 !important;
+}
+
+.status.rejected {
+  background: #4a1518 !important;
+  color: #ff7777 !important;
+}
+
+.status.pending,
+.status.waiting_for_approval {
+  background: #463410 !important;
+  color: #ffd36b !important;
+}
+
+.reject-button {
+  background: #4a1518 !important;
+  border: 1px solid #853238 !important;
+  color: #ff7777 !important;
+}
+
+.option,
+.compare > div,
+.conflict,
+.explanation,
+.request-status,
+.notification,
+.notice-panel {
+  background: #0d0d0d !important;
+}
+
+.compare .new,
+.option.selected {
+  background: #21110d !important;
+}
+
+.close {
+  background: #171717;
+  color: #d4dcda;
+}
+
+/* Lightweight 3D agent visualization */
+.hero {
+  perspective: 900px;
+  transform-style: preserve-3d;
+}
+
+.hero-copy {
+  transform: translateZ(18px);
+}
+
+.agent-orbit {
+  perspective: 700px;
+  transform-style: preserve-3d;
+  transform: rotateX(12deg) rotateY(-18deg);
+  animation: agent-float 6s ease-in-out infinite;
+}
+
+.orbit-ring {
+  transform-style: preserve-3d;
+  box-shadow: 0 0 24px rgba(255, 107, 61, 0.12);
+}
+
+.ring-one {
+  transform: translate(-50%, -50%) rotateX(68deg) rotateZ(12deg);
+}
+
+.ring-two {
+  transform: translate(-50%, -50%) rotateY(68deg) rotateZ(-18deg);
+}
+
+.orbit-core {
+  transform: translate(-50%, -50%) translateZ(38px);
+  box-shadow:
+    0 0 25px rgba(255, 107, 61, 0.72),
+    0 18px 28px rgba(0, 0, 0, 0.48);
+}
+
+.orbit-tag {
+  transform: translateZ(48px);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.28);
+}
+
+.tag-one {
+  transform: translateZ(70px) rotateY(-8deg);
+}
+
+.tag-two {
+  transform: translateZ(58px) rotateY(8deg);
+}
+
+.tag-three {
+  transform: translateZ(78px) rotateY(-10deg);
+}
+
+.metric,
+.table-panel,
+.notice-panel,
+.student-event,
+.request-callout {
+  transform-style: preserve-3d;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.metric:hover,
+.student-event:hover,
+.request-callout:hover {
+  transform: translateY(-4px) rotateX(1deg) rotateY(-1deg);
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.34);
+}
+
+.table-panel:hover,
+.notice-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.28);
+}
+
+@keyframes agent-float {
+  0%,
+  100% {
+    transform: rotateX(12deg) rotateY(-18deg) translateY(0);
+  }
+
+  50% {
+    transform: rotateX(12deg) rotateY(-18deg) translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-orbit {
+    animation: none;
+  }
+
+  .metric,
+  .table-panel,
+  .notice-panel,
+  .student-event,
+  .request-callout {
+    transition: none;
+  }
+}
+
+.block-select {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 12px 0 4px;
+  color: #aeb9b5;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.block-select select {
+  min-width: 190px;
+  border: 1px solid #343434;
+  border-radius: 5px;
+  padding: 8px 10px;
+  background: #151515;
+  color: #f4f7f5;
+  font: 500 10px 'DM Sans';
+}
+
+@media (max-width: 700px) {
+  .shell aside {
+    display: flex;
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 260px;
+    z-index: 10;
+    transform: translateX(-105%);
+    transition: transform 220ms ease;
+    box-shadow: 18px 0 45px rgba(0, 0, 0, 0.45);
+  }
+
+  .shell aside.sidebar-open {
+    transform: translateX(0);
+  }
+
+  .block-select {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .block-select select {
+    width: 100%;
+  }
+}
