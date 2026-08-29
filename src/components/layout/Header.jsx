@@ -74,18 +74,8 @@ export default function Header({
         )}
       </div>
 
-      {/* Right: Search, Switch View, Notifications, Profile */}
+      {/* Right: Search, Notifications, Profile */}
       <div className="flex items-center gap-3.5">
-        
-        {/* Role Toggle Switcher */}
-        <button
-          onClick={onToggleRole}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50/80 hover:bg-indigo-100 text-indigo-900 text-xs font-bold transition-all shadow-2xs cursor-pointer"
-          title="Switch view between Student and Placement Officer / Admin"
-        >
-          <Icon name="refresh" className="w-3.5 h-3.5 text-indigo-600" />
-          <span>Switch to {currentRole === 'student' ? 'Admin / TPO View' : 'Student View'}</span>
-        </button>
 
         {/* Search Bar */}
         <div ref={searchRef} className="relative hidden xl:block">

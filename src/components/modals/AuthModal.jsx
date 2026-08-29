@@ -147,7 +147,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
             <input
               type="text"
               name="fullName"
-              placeholder="e.g. Vaatsav Krishna / Ananya Roy"
+              placeholder="e.g. Alex Smith / Rohan Sharma"
               value={formData.fullName}
               onChange={handleChange}
               required
