@@ -260,7 +260,29 @@ export default function Dashboard({
   };
 
   const handleConfirmInterview = (interview) => {
-    showToast(`Interview confirmed for ${interview.studentName || interview.studentId} (${interview.company || 'Company'})`, 'success');
+    const intId = interview.id || interview.interviewId;
+    setInterviews((prev) =>
+      prev.map((i) =>
+        i.id === intId || i.interviewId === intId ? { ...i, status: 'confirmed' } : i
+      )
+    );
+
+    const notif = {
+      notificationId: `NOTIF_CONF_${Date.now()}`,
+      recipientId: currentUser?.studentId || 'STU101',
+      recipientRole: 'student',
+      type: 'interview_confirmed',
+      title: '✅ Interview Slot Confirmed',
+      message: `You confirmed your interview slot for ${interview.company || 'Company'} (${interview.type || 'Technical Round'}). Venue: ${interview.roomNo || interview.roomId || 'Block B - Room 302'}.`,
+      priority: 'medium',
+      isRead: false,
+      timestamp: 'Just now',
+      sentAt: new Date(),
+    };
+
+    setNotifications((prev) => [notif, ...prev]);
+
+    showToast(`🎉 Interview slot confirmed for ${interview.company}! Notification sent & slot locked.`, 'success');
   };
 
   // STUDENT VIEW RENDERING
@@ -323,8 +345,8 @@ export default function Dashboard({
                 <InterviewScheduleCard
                   key={interview.id || interview.interviewId || idx}
                   interview={interview}
-                  onReschedule={() => {
-                    showToast('Contact placement cell for reschedule requests.', 'info');
+                  onReschedule={(intToResched) => {
+                    setSchedulingData({ interview: intToResched });
                   }}
                   onConfirm={handleConfirmInterview}
                 />
@@ -1032,12 +1054,13 @@ export default function Dashboard({
           interview={schedulingData.interview}
           onClose={() => setSchedulingData(null)}
           onSave={(newInterview) => {
+            const intId = schedulingData.interview?.id || schedulingData.interview?.interviewId || `int-${Date.now()}`;
             const int = {
-              id: schedulingData.interview?.id || `int-${Date.now()}`,
-              interviewId: schedulingData.interview?.interviewId || `INT_${Date.now()}`,
+              id: intId,
+              interviewId: intId,
               studentName: newInterview.studentName,
               company: newInterview.company,
-              round: 1,
+              round: schedulingData.interview?.round || 1,
               type: newInterview.type,
               scheduledTime: `${newInterview.date} ${newInterview.time}`,
               date: newInterview.date,
@@ -1046,10 +1069,26 @@ export default function Dashboard({
               roomNo: newInterview.roomNo,
               roomId: newInterview.roomNo,
               panel: [newInterview.panel],
-              status: 'scheduled',
-              duration: newInterview.duration,
+              status: 'rescheduled',
+              duration: newInterview.duration || '60 mins',
             };
-            setInterviews((prev) => [int, ...prev.filter((i) => (i.id !== int.id && i.interviewId !== int.interviewId))]);
+
+            setInterviews((prev) => [int, ...prev.filter((i) => (i.id !== intId && i.interviewId !== intId))]);
+
+            const notif = {
+              notificationId: `NOTIF_RESCHED_${Date.now()}`,
+              recipientId: currentUser?.studentId || 'STU101',
+              recipientRole: 'student',
+              type: 'reschedule_requested',
+              title: '📅 Interview Rescheduled & Confirmed',
+              message: `Your interview for ${newInterview.company} (${newInterview.type || 'Technical Round'}) has been updated to ${newInterview.time} at ${newInterview.roomNo}.`,
+              priority: 'high',
+              isRead: false,
+              timestamp: 'Just now',
+              sentAt: new Date(),
+            };
+
+            setNotifications((prev) => [notif, ...prev]);
           }}
         />
       )}
