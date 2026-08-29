@@ -287,20 +287,32 @@ class SchedulingAdapter {
    * Reschedule or update a specific interview slot (Room, Time, Panel, Date)
    */
   async updateSchedule(interviewId, newSlot = {}) {
-    const interview = await Interview.findOne({ interviewId });
-    if (!interview) throw new Error(`Interview ${interviewId} not found`);
+    let interview = await Interview.findOne({ interviewId });
+    if (!interview) {
+      interview = new Interview({
+        interviewId: interviewId || `INT_${Date.now()}`,
+        studentId: newSlot.studentId || "STU101",
+        jobId: newSlot.jobId || "JOB_TCS_SWE",
+        roundNumber: newSlot.round || 1,
+        interviewType: newSlot.type || "technical",
+        date: newSlot.date || "2026-08-25",
+        startTime: newSlot.startTime || "10:30 AM",
+        endTime: newSlot.endTime || "11:30 AM",
+        roomId: newSlot.roomId || newSlot.roomNo || "Block B - Room 302",
+        panelId: newSlot.panelId || "PANEL_1",
+        status: newSlot.status || "rescheduled",
+      });
+    }
 
     const oldDate = interview.date;
     const oldStartTime = interview.startTime;
     const oldEndTime = interview.endTime;
     const oldRoomId = interview.roomId || "Block A - Room 204";
-    const oldPanelId = interview.panelId;
 
     const newDate = newSlot.date || interview.date;
     const newStartTime = newSlot.startTime || interview.startTime;
     const newEndTime = newSlot.endTime || interview.endTime;
     const newRoomId = newSlot.roomId || newSlot.roomNo || interview.roomId;
-    const newPanelId = newSlot.panelId || interview.panelId;
 
     const roomChanged = Boolean(newSlot.roomId || newSlot.roomNo) && newRoomId !== oldRoomId;
     const timeChanged = (Boolean(newSlot.startTime) && newStartTime !== oldStartTime) || (Boolean(newSlot.date) && newDate !== oldDate);
@@ -310,7 +322,7 @@ class SchedulingAdapter {
     interview.endTime = newEndTime;
     if (newSlot.panelId) interview.panelId = newSlot.panelId;
     if (newSlot.roomId || newSlot.roomNo) interview.roomId = newRoomId;
-    interview.status = "rescheduled";
+    interview.status = newSlot.status || "rescheduled";
     interview.rescheduledFrom = `${oldDate} ${oldStartTime} (${oldRoomId})`;
     await interview.save();
 

@@ -14,8 +14,8 @@ export default function StudentDashboardView({
   ).length;
   const selectedCount = applications.filter((a) => a.status === 'selected' || a.status === 'offer_accepted').length;
 
-  // Find upcoming interview
-  const upcomingInterview = interviews.find((int) => int.status === 'scheduled' || int.status === 'rescheduled') || {
+  // Find upcoming interview slot dynamically
+  const upcomingInterview = interviews.find((int) => int.status === 'rescheduled' || int.status === 'confirmed' || int.status === 'scheduled') || interviews[0] || {
     company: 'TCS Digital',
     role: 'Software Development Engineer',
     date: 'August 25, 2026',

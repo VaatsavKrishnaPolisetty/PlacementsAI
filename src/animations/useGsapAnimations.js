@@ -150,6 +150,27 @@ export function useModalEntrance(modalRef, backdropRef) {
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
+    if (backdropRef?.current) {
+      backdropRef.current.style.position = 'fixed';
+      backdropRef.current.style.top = '0px';
+      backdropRef.current.style.left = '0px';
+      backdropRef.current.style.right = '0px';
+      backdropRef.current.style.bottom = '0px';
+      backdropRef.current.style.width = '100vw';
+      backdropRef.current.style.height = '100vh';
+      backdropRef.current.style.zIndex = '99999';
+      backdropRef.current.style.display = 'flex';
+      backdropRef.current.style.alignItems = 'center';
+      backdropRef.current.style.justifyContent = 'center';
+    }
+
+    if (modalRef?.current) {
+      modalRef.current.style.margin = 'auto';
+      modalRef.current.style.maxHeight = '88vh';
+      modalRef.current.style.zIndex = '100000';
+      modalRef.current.style.transformOrigin = 'center center';
+    }
+
     if (modalRef.current) {
       const ctx = gsap.context(() => {
         if (backdropRef?.current) {
@@ -162,7 +183,7 @@ export function useModalEntrance(modalRef, backdropRef) {
 
         gsap.fromTo(
           modalRef.current,
-          { opacity: 0, scale: 0.94, y: 15 },
+          { opacity: 0, scale: 0.94, y: 0 },
           {
             opacity: 1,
             scale: 1,
