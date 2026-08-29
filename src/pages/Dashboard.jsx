@@ -1055,7 +1055,9 @@ export default function Dashboard({
           onClose={() => setSchedulingData(null)}
           onSave={(newInterview) => {
             const intId = schedulingData.interview?.id || schedulingData.interview?.interviewId || `int-${Date.now()}`;
-            const int = {
+            const isConfirmed = schedulingData.interview?.status === 'confirmed';
+            
+            const updatedInterview = {
               id: intId,
               interviewId: intId,
               studentName: newInterview.studentName,
@@ -1068,27 +1070,42 @@ export default function Dashboard({
               endTime: newInterview.time.includes('10:') ? '11:30 AM' : '3:00 PM',
               roomNo: newInterview.roomNo,
               roomId: newInterview.roomNo,
-              panel: [newInterview.panel],
-              status: 'rescheduled',
+              panel: Array.isArray(newInterview.panel) ? newInterview.panel : [newInterview.panel],
+              status: isConfirmed ? 'confirmed' : 'rescheduled',
               duration: newInterview.duration || '60 mins',
             };
 
-            setInterviews((prev) => [int, ...prev.filter((i) => (i.id !== intId && i.interviewId !== intId))]);
+            setInterviews((prev) => [updatedInterview, ...prev.filter((i) => (i.id !== intId && i.interviewId !== intId))]);
 
-            const notif = {
-              notificationId: `NOTIF_RESCHED_${Date.now()}`,
+            // 1. Student Notification: Approval & Schedule Update
+            const studentNotif = {
+              notificationId: `NOTIF_STU_RESCHED_${Date.now()}`,
               recipientId: currentUser?.studentId || 'STU101',
               recipientRole: 'student',
-              type: 'reschedule_requested',
-              title: '📅 Interview Rescheduled & Confirmed',
-              message: `Your interview for ${newInterview.company} (${newInterview.type || 'Technical Round'}) has been updated to ${newInterview.time} at ${newInterview.roomNo}.`,
+              type: 'reschedule_approved',
+              title: '✅ Reschedule Approved & Calendar Updated',
+              message: `Your interview for ${newInterview.company} (${newInterview.type || 'Technical Round'}) has been updated to ${newInterview.time} in ${newInterview.roomNo}. Notification dispatched to your portal!`,
+              priority: 'urgent',
+              isRead: false,
+              timestamp: 'Just now',
+              sentAt: new Date(),
+            };
+
+            // 2. Admin / TPO Notification: Reschedule Request Received & Handled
+            const adminNotif = {
+              notificationId: `NOTIF_ADMIN_RESCHED_${Date.now() + 1}`,
+              recipientId: 'TPO_ADMIN',
+              recipientRole: 'admin',
+              type: 'reschedule_request_received',
+              title: '📩 Reschedule Request Handled',
+              message: `Reschedule request for ${newInterview.studentName} (${newInterview.company}) reallocated to ${newInterview.time} in ${newInterview.roomNo}.`,
               priority: 'high',
               isRead: false,
               timestamp: 'Just now',
               sentAt: new Date(),
             };
 
-            setNotifications((prev) => [notif, ...prev]);
+            setNotifications((prev) => [studentNotif, adminNotif, ...prev]);
           }}
         />
       )}

@@ -44,13 +44,13 @@ export default function ScheduleModal({ interview, candidate, onClose, onSave })
       const timeChanged = interview && (interview.startTime || interview.scheduledTime) && (interview.startTime || interview.scheduledTime) !== formData.time;
 
       if (roomChanged && timeChanged) {
-        showToast(`🚨 Combined update applied: Time shifted to ${formData.time} & Room moved to ${formData.roomNo}. Urgent notification sent to ${formData.studentName}!`, 'warning');
+        showToast(`🚨 Time shifted to ${formData.time} & Room moved to ${formData.roomNo}. Request sent to Admin & Approval notified to student!`, 'warning');
       } else if (roomChanged) {
-        showToast(`🚨 Room changed to ${formData.roomNo}! Urgent notification sent to ${formData.studentName}.`, 'warning');
+        showToast(`🚨 Room changed to ${formData.roomNo}! Request sent to Admin & Approval notified to student.`, 'warning');
       } else if (timeChanged) {
-        showToast(`⚠️ Time moved to ${formData.time}. Notification sent to ${formData.studentName}.`, 'info');
+        showToast(`⚠️ Time moved to ${formData.time}. Request sent to Admin & Approval notified to student.`, 'info');
       } else {
-        showToast(`Interview details saved & student notified: ${formData.studentName}`, 'success');
+        showToast(`📩 Reschedule request sent to Admin & Approval notification sent to ${formData.studentName}!`, 'success');
       }
 
       onSave?.(formData);
