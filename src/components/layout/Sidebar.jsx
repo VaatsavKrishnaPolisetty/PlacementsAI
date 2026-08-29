@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Icon from '../common/Icons';
 
-export default function Sidebar({ activeTab, setActiveTab, currentRole = 'student' }) {
+export default function Sidebar({ activeTab, setActiveTab, currentRole = 'student', currentUser }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const studentMenuItems = [
@@ -109,13 +109,13 @@ export default function Sidebar({ activeTab, setActiveTab, currentRole = 'studen
       {!isCollapsed && (
         <div className="p-3 m-3 rounded-xl bg-slate-950/60 border border-slate-800/80 text-[11px] space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="font-semibold">Active Mode</span>
+            <span className="font-semibold">Active Profile</span>
             <span className="badge badge-info text-[9px] font-bold">
               {currentRole === 'student' ? 'Student' : 'Admin'}
             </span>
           </div>
-          <p className="text-[10px] text-slate-500">
-            {currentRole === 'student' ? 'Viewing as Rahul Verma' : 'Viewing as Placement Admin'}
+          <p className="text-[10px] text-slate-300 font-semibold truncate">
+            {currentUser?.name || (currentRole === 'student' ? 'Student Candidate' : 'Placement Admin')}
           </p>
         </div>
       )}

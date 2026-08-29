@@ -36,7 +36,7 @@ export default function StudentDashboardView({
             <span className="badge badge-info text-[10px] font-bold">Student Placement Portal</span>
             <span className="text-xs text-indigo-200">ID: {student?.studentId || 'STU101'}</span>
           </div>
-          <h2 className="text-2xl font-black tracking-tight">Welcome back, {student?.name || 'Rahul Verma'}!</h2>
+          <h2 className="text-2xl font-black tracking-tight">Welcome back, {student?.name || 'Student Candidate'}!</h2>
           <p className="text-xs text-indigo-200 font-medium max-w-xl">
             {student?.department || 'Computer Science & Engineering'} • CGPA:{' '}
             <strong className="text-emerald-400 font-bold">{student?.cgpa || 8.8}</strong> • Graduation:{' '}

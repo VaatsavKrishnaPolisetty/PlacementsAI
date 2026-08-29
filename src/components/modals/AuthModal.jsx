@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Icon from '../common/Icons';
 import { useToast } from '../common/ToastContext';
+import { useModalEntrance } from '../../animations/useGsapAnimations';
 import api from '../../services/api';
 
 export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
   const { showToast } = useToast();
   const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
+  const modalRef = useRef(null);
+  const backdropRef = useRef(null);
+
+  useModalEntrance(modalRef, backdropRef);
 
   // Form fields
   const [formData, setFormData] = useState({
@@ -33,13 +38,21 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
     try {
       if (userType === 'admin') {
         const res = await api.auth.login('tpo@placement.edu', 'admin123', 'admin');
-        showToast('Logged in as Dr. Sharma (Head of Placement)', 'success');
-        onAuthSuccess(res.user);
+        const userWithCustomName = {
+          ...res.user,
+          name: formData.fullName.trim() || res.user.name || 'Dr. Sharma (TPO)',
+        };
+        showToast(`Logged in as ${userWithCustomName.name}`, 'success');
+        onAuthSuccess(userWithCustomName);
         onClose();
       } else {
         const res = await api.auth.login('STU101', 'password123', 'student');
-        showToast('Logged in as Rahul Verma (Student)', 'success');
-        onAuthSuccess(res.user);
+        const userWithCustomName = {
+          ...res.user,
+          name: formData.fullName.trim() || res.user.name || 'Student Candidate',
+        };
+        showToast(`Logged in as ${userWithCustomName.name}`, 'success');
+        onAuthSuccess(userWithCustomName);
         onClose();
       }
     } catch (err) {
@@ -53,17 +66,28 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
     e.preventDefault();
     setLoading(true);
     try {
+      let finalUser;
       if (isRegister) {
         const res = await api.auth.register(formData);
-        showToast('Registration successful! Welcome to Campus Placements.', 'success');
-        onAuthSuccess(res.user);
-        onClose();
+        finalUser = {
+          ...res.user,
+          name: formData.fullName.trim() || res.user.name,
+          studentId: formData.studentId || res.user.studentId || 'STU101',
+          department: formData.department || 'Computer Science & Engineering',
+        };
+        showToast(`Account created! Welcome, ${finalUser.name}`, 'success');
       } else {
         const res = await api.auth.login(formData.email || formData.studentId, formData.password);
-        showToast(`Welcome back, ${res.user.name}!`, 'success');
-        onAuthSuccess(res.user);
-        onClose();
+        finalUser = {
+          ...res.user,
+          name: formData.fullName.trim() || res.user.name || formData.email.split('@')[0],
+          studentId: formData.studentId || res.user.studentId || 'STU101',
+          department: formData.department || res.user.department || 'Computer Science & Engineering',
+        };
+        showToast(`Welcome back, ${finalUser.name}!`, 'success');
       }
+      onAuthSuccess(finalUser);
+      onClose();
     } catch (err) {
       showToast(err.message || 'Authentication error', 'error');
     } finally {
@@ -72,8 +96,8 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden flex flex-col">
+    <div ref={backdropRef} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto w-screen h-screen">
+      <div ref={modalRef} className="my-auto relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-start justify-between">
           <div>
@@ -116,20 +140,23 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[65vh]">
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1">
+              Your Full Name <span className="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="fullName"
+              placeholder="e.g. Vaatsav Krishna / Ananya Roy"
+              value={formData.fullName}
+              onChange={handleChange}
+              required
+              className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-semibold text-slate-900"
+            />
+          </div>
+
           {isRegister && (
             <>
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
-                <input
-                  type="text"
-                  name="fullName"
-                  placeholder="e.g. Rahul Verma"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                />
-              </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>

@@ -10,9 +10,9 @@ export default function StudentProfileView({ student, onProfileUpdated }) {
 
   // Form State
   const [personal, setPersonal] = useState({
-    name: student?.name || 'Rahul Verma',
+    name: student?.name || '',
     studentId: student?.studentId || 'STU101',
-    email: student?.email || 'rahul.verma@college.edu',
+    email: student?.email || '',
     phone: student?.phone || '+91 98765 43210',
     department: student?.department || 'Computer Science & Engineering',
     year: student?.year || 4,
@@ -21,6 +21,19 @@ export default function StudentProfileView({ student, onProfileUpdated }) {
     backlogs: student?.backlogs || 0,
     graduationYear: student?.graduationYear || 2026,
   });
+
+  // Keep personal state updated when student prop changes
+  React.useEffect(() => {
+    if (student?.name) {
+      setPersonal((prev) => ({
+        ...prev,
+        name: student.name,
+        email: student.email || prev.email,
+        studentId: student.studentId || prev.studentId,
+        department: student.department || prev.department,
+      }));
+    }
+  }, [student]);
 
   // Skills State
   const [technicalSkills, setTechnicalSkills] = useState(

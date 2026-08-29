@@ -18,42 +18,54 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentRole, setCurrentRole] = useState('student'); // 'student' | 'admin'
-  const [currentUser, setCurrentUser] = useState({
-    id: 'STU101',
-    studentId: 'STU101',
-    name: 'Rahul Verma',
-    email: 'rahul.verma@college.edu',
-    role: 'student',
-    department: 'Computer Science & Engineering',
-    degree: 'B.Tech',
-    year: 4,
-    cgpa: 8.8,
-    backlogs: 0,
-    skills: {
-      technical: ['Python', 'SQL', 'Data Structures', 'FastAPI', 'React'],
-      soft: ['Communication', 'Problem Solving', 'Team Leadership'],
-    },
-    resume: {
-      fileName: 'Rahul_Verma_Resume.pdf',
-      fileUrl: '/uploads/sample_resume.pdf',
-      fileSize: 245000,
-      uploadedAt: new Date(),
-    },
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = localStorage.getItem('placements_user');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.name) return parsed;
+      } catch (e) {
+        console.error('Failed to parse saved user:', e);
+      }
+    }
+    return {
+      id: 'STU101',
+      studentId: 'STU101',
+      name: '',
+      email: '',
+      role: 'student',
+      department: 'Computer Science & Engineering',
+      degree: 'B.Tech',
+      year: 4,
+      cgpa: 8.8,
+      backlogs: 0,
+      skills: {
+        technical: ['Python', 'SQL', 'Data Structures', 'FastAPI', 'React'],
+        soft: ['Communication', 'Problem Solving', 'Team Leadership'],
+      },
+      resume: {
+        fileName: 'Student_Resume.pdf',
+        fileUrl: '/uploads/sample_resume.pdf',
+        fileSize: 245000,
+        uploadedAt: new Date(),
+      },
+    };
   });
 
   const [notifications, setNotifications] = useState(mockPlacementData.notifications);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(() => {
+    return !localStorage.getItem('placements_user');
+  });
   const mainRef = useRef(null);
 
   // Load user profile & notifications on startup
   useEffect(() => {
-    // 1. Fetch live notifications
-    api.notifications.getByUser(currentUser.studentId || 'STU101').then((res) => {
-      if (res && res.length) setNotifications(res);
-    });
-
-    // 2. Connect real-time socket
-    socketService.connect(currentUser.studentId || 'STU101', currentRole);
+    if (currentUser.studentId) {
+      api.notifications.getByUser(currentUser.studentId).then((res) => {
+        if (res && res.length) setNotifications(res);
+      });
+      socketService.connect(currentUser.studentId, currentRole);
+    }
 
     const unNotif = socketService.on('notification', (notif) => {
       setNotifications((prev) => [notif, ...prev]);
@@ -93,21 +105,27 @@ function AppContent() {
     if (currentRole === 'student') {
       setCurrentRole('admin');
       setActiveTab('dashboard');
-      showToast('Switched to Placement Officer / Admin Portal (Dr. Sharma)', 'info');
+      showToast(`Switched to Placement Officer / Admin Portal (${currentUser?.name || 'Dr. Sharma'})`, 'info');
     } else {
       setCurrentRole('student');
       setActiveTab('dashboard');
-      showToast('Switched to Student Portal (Rahul Verma)', 'info');
+      showToast(`Switched to Student Portal (${currentUser?.name || 'Student Candidate'})`, 'info');
     }
   };
 
   const handleAuthSuccess = (user) => {
     setCurrentUser(user);
+    try {
+      localStorage.setItem('placements_user', JSON.stringify(user));
+    } catch (e) {
+      console.error('Failed to save user to localStorage:', e);
+    }
     if (user.role === 'tpo' || user.role === 'admin') {
       setCurrentRole('admin');
     } else {
       setCurrentRole('student');
     }
+    setIsAuthModalOpen(false);
     setActiveTab('dashboard');
   };
 
@@ -126,7 +144,7 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex">
       {/* Fixed Dynamic Sidebar */}
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} currentRole={currentRole} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} currentRole={currentRole} currentUser={currentUser} />
 
       {/* Header Bar with Role Switcher & Notifications */}
       <Header
