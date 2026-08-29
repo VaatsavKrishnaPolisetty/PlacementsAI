@@ -52,16 +52,17 @@ export default function StudentJobsView({
   };
 
   const handleApply = async (job) => {
-    // 1. Check resume presence
-    if (!student?.resume || !student?.resume?.fileName) {
-      showToast("Please upload your resume in the 'My Profile & Resume' section first!", 'warning');
-      onNavigate('profile');
+    // 1. Strict Eligibility Check
+    const elig = checkEligibility(job);
+    if (!elig.eligible) {
+      showToast(`⛔ Application Blocked: ${elig.reason}`, 'error');
       return;
     }
 
-    const elig = checkEligibility(job);
-    if (!elig.eligible) {
-      showToast(`Cannot apply: ${elig.reason}`, 'error');
+    // 2. Check resume presence
+    if (!student?.resume || !student?.resume?.fileName) {
+      showToast("Please upload your resume in the 'My Profile & Resume' section first!", 'warning');
+      onNavigate('profile');
       return;
     }
 
@@ -193,13 +194,11 @@ export default function StudentJobsView({
                   >
                     ✓ Applied (Track Status)
                   </button>
-                ) : (
+                ) : elig.eligible ? (
                   <button
                     onClick={() => handleApply(job)}
-                    disabled={!elig.eligible || applyingJobId === jobId}
-                    className={`btn-primary text-xs py-1.5 px-4 font-bold shadow-md flex items-center gap-1.5 ${
-                      !elig.eligible ? 'opacity-50 cursor-not-allowed bg-slate-400' : ''
-                    }`}
+                    disabled={applyingJobId === jobId}
+                    className="btn-primary text-xs py-1.5 px-4 font-bold shadow-md flex items-center gap-1.5"
                   >
                     {applyingJobId === jobId ? (
                       <span className="animate-spin">⏳</span>
@@ -207,6 +206,14 @@ export default function StudentJobsView({
                       <Icon name="check-circle" className="w-3.5 h-3.5" />
                     )}
                     Apply Now
+                  </button>
+                ) : (
+                  <button
+                    disabled
+                    className="py-1.5 px-3.5 rounded-xl bg-slate-100 text-slate-400 border border-slate-200 text-xs font-bold cursor-not-allowed pointer-events-none flex items-center gap-1.5"
+                  >
+                    <Icon name="alert-triangle" className="w-3.5 h-3.5 text-slate-400" />
+                    Ineligible to Apply
                   </button>
                 )}
               </div>

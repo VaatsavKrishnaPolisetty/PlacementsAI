@@ -157,6 +157,53 @@ export default function StudentProfileView({ student, onProfileUpdated }) {
     }
   };
 
+  const handleUseDefaultDemoResume = async () => {
+    setUploadingResume(true);
+    try {
+      const demoFileUrl = '/uploads/demo_resume.pdf';
+      const demoFileName = 'Rahul_Verma_Resume.pdf';
+      
+      const newResumeObj = {
+        fileName: demoFileName,
+        fileUrl: demoFileUrl,
+        fileSize: 245000,
+        uploadedAt: new Date(),
+      };
+      setResume(newResumeObj);
+
+      const defaultTechSkills = ['Python', 'SQL', 'Data Structures', 'FastAPI', 'React', 'Docker', 'System Design'];
+      const defaultSoftSkills = ['Communication', 'Problem Solving', 'Team Leadership', 'Agile Methodologies'];
+
+      const updatedTechSkills = Array.from(new Set([...technicalSkills, ...defaultTechSkills]));
+      const updatedSoftSkills = Array.from(new Set([...softSkills, ...defaultSoftSkills]));
+
+      setTechnicalSkills(updatedTechSkills);
+      setSoftSkills(updatedSoftSkills);
+
+      const updatedStudentProfile = {
+        ...student,
+        ...personal,
+        skills: {
+          technical: updatedTechSkills,
+          soft: updatedSoftSkills,
+        },
+        resume: newResumeObj,
+      };
+
+      await api.student.updateProfile(student?.studentId || 'STU101', updatedStudentProfile);
+
+      showToast('📄 Demo Sample Resume loaded & verified! Profile credentials auto-updated.', 'success');
+
+      if (onProfileUpdated) {
+        onProfileUpdated(updatedStudentProfile);
+      }
+    } catch (err) {
+      showToast('Failed to load demo resume', 'error');
+    } finally {
+      setUploadingResume(false);
+    }
+  };
+
   const handleDeleteResume = async () => {
     try {
       await api.student.deleteResume(student?.studentId || 'STU101');
@@ -418,8 +465,32 @@ export default function StudentProfileView({ student, onProfileUpdated }) {
             </div>
 
             <p className="text-xs text-slate-500 leading-relaxed">
-              Upload your latest resume in PDF, DOC, or DOCX format. Required for all campus drive applications.
+              Upload your latest resume in PDF, DOC, DOCX, or TXT format. Required for all campus drive applications.
             </p>
+
+            {/* Quick Demonstration Demo Resume Option */}
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+                <span>Demo Resume Template</span>
+                <a
+                  href="/uploads/demo_resume.pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                  download="Rahul_Verma_Resume.pdf"
+                  className="text-indigo-600 hover:underline text-[11px] font-semibold flex items-center gap-1"
+                >
+                  <Icon name="download" className="w-3 h-3" /> Download Sample
+                </a>
+              </div>
+              <button
+                type="button"
+                onClick={handleUseDefaultDemoResume}
+                disabled={uploadingResume}
+                className="w-full py-2 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-xs flex items-center justify-center gap-2 transition-colors"
+              >
+                📄 Load Default Sample Resume (Demo)
+              </button>
+            </div>
 
             {resume && resume.fileName ? (
               <div className="p-4 rounded-2xl border border-indigo-200 bg-indigo-50/50 space-y-3">
@@ -441,7 +512,7 @@ export default function StudentProfileView({ student, onProfileUpdated }) {
                     Replace
                     <input
                       type="file"
-                      accept=".pdf,.doc,.docx"
+                      accept=".pdf,.doc,.docx,.txt"
                       onChange={handleResumeFileUpload}
                       className="hidden"
                     />
@@ -462,13 +533,13 @@ export default function StudentProfileView({ student, onProfileUpdated }) {
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs font-bold text-slate-800">Upload your resume</p>
-                  <p className="text-[10px] text-slate-400">PDF, DOC, DOCX up to 10MB</p>
+                  <p className="text-[10px] text-slate-400">PDF, DOC, DOCX, TXT up to 10MB</p>
                 </div>
                 <label className="btn-primary text-xs py-2 px-4 font-bold inline-block cursor-pointer shadow-md">
                   {uploadingResume ? 'Uploading...' : 'Select File to Upload'}
                   <input
                     type="file"
-                    accept=".pdf,.doc,.docx"
+                    accept=".pdf,.doc,.docx,.txt"
                     onChange={handleResumeFileUpload}
                     disabled={uploadingResume}
                     className="hidden"
