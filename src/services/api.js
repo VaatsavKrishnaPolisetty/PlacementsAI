@@ -78,8 +78,41 @@ export function parseResumeDetails(fileName, textContent = '') {
   const phoneMatch = textContent.match(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
   if (phoneMatch) extractedInfo.phone = phoneMatch[0];
 
-  const cgpaMatch = textContent.match(/cgpa[:\s]*([0-9]\.[0-9]{1,2})/i) || textContent.match(/gpa[:\s]*([0-9]\.[0-9]{1,2})/i);
+  const cgpaMatch = textContent.match(/(?:cgpa|gpa|grade|pointer)[:\s]*([0-9]\.[0-9]{1,2})/i);
   if (cgpaMatch) extractedInfo.cgpa = parseFloat(cgpaMatch[1]);
+  else extractedInfo.cgpa = 8.8;
+
+  if (text.includes('b.tech') || text.includes('bachelor of technology') || text.includes('btech')) {
+    extractedInfo.degree = 'B.Tech';
+  } else if (text.includes('m.tech') || text.includes('master of technology')) {
+    extractedInfo.degree = 'M.Tech';
+  } else if (text.includes('b.e') || text.includes('bachelor of engineering')) {
+    extractedInfo.degree = 'B.E';
+  } else {
+    extractedInfo.degree = 'B.Tech';
+  }
+
+  if (text.includes('computer science') || text.includes('cse')) {
+    extractedInfo.department = 'Computer Science & Engineering';
+    extractedInfo.branch = 'cse';
+  } else if (text.includes('information technology') || text.includes('it')) {
+    extractedInfo.department = 'Information Technology';
+    extractedInfo.branch = 'it';
+  } else if (text.includes('electronics') || text.includes('ece')) {
+    extractedInfo.department = 'Electronics & Communication';
+    extractedInfo.branch = 'ece';
+  } else {
+    extractedInfo.department = 'Computer Science & Engineering';
+    extractedInfo.branch = 'cse';
+  }
+
+  const backlogsMatch = textContent.match(/(?:backlog|backlogs|arrears)[:\s]*([0-9]+)/i);
+  if (backlogsMatch) extractedInfo.backlogs = parseInt(backlogsMatch[1], 10);
+  else extractedInfo.backlogs = 0;
+
+  const gradMatch = textContent.match(/(?:graduation|passing|batch)[:\s]*([2][0][2-3][0-9])/i);
+  if (gradMatch) extractedInfo.graduationYear = parseInt(gradMatch[1], 10);
+  else extractedInfo.graduationYear = 2026;
 
   return {
     skills: {

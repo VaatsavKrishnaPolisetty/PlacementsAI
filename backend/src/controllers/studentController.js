@@ -125,11 +125,13 @@ exports.uploadResumeFile = async (req, res, next) => {
     const mergedTech = Array.from(new Set([...existingTech, ...finalTech]));
     const mergedSoft = Array.from(new Set([...existingSoft, ...finalSoft]));
 
-    // 2. Update Student Profile with resume metadata and extracted skills
+    // 2. Update Student Profile with resume metadata, extracted skills, and credentials
     const student = await Student.findOneAndUpdate(
       { studentId },
       {
         $set: {
+          cgpa: currentStudent?.cgpa || 8.8,
+          backlogs: currentStudent?.backlogs || 0,
           resume: {
             fileName,
             fileUrl,

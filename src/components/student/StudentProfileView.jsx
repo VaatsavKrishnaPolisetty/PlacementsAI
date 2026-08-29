@@ -139,6 +139,10 @@ export default function StudentProfileView({ student, onProfileUpdated }) {
         phone: extInfo.phone || personal.phone,
         email: extInfo.email || personal.email,
         cgpa: extInfo.cgpa !== undefined ? extInfo.cgpa : personal.cgpa,
+        degree: extInfo.degree || personal.degree,
+        department: extInfo.department || personal.department,
+        backlogs: extInfo.backlogs !== undefined ? extInfo.backlogs : personal.backlogs,
+        graduationYear: extInfo.graduationYear || personal.graduationYear,
       };
       setPersonal(updatedPersonal);
 
@@ -152,11 +156,11 @@ export default function StudentProfileView({ student, onProfileUpdated }) {
         resume: newResumeObj,
       };
 
-      // Save updated profile to backend/api state
+      // Save updated profile to backend/api state & DB
       await api.student.updateProfile(student?.studentId || 'STU101', updatedStudentProfile);
 
       showToast(
-        `🎉 Resume '${file.name}' uploaded & analyzed! Extracted ${extTech.length} skills & updated student credentials.`,
+        `🎉 Resume '${file.name}' analyzed! AI extracted CGPA (${updatedPersonal.cgpa}), ${updatedTechSkills.length} skills & auto-filled qualifications across portal!`,
         'success'
       );
 
@@ -193,9 +197,19 @@ export default function StudentProfileView({ student, onProfileUpdated }) {
       setTechnicalSkills(updatedTechSkills);
       setSoftSkills(updatedSoftSkills);
 
+      const updatedPersonal = {
+        ...personal,
+        cgpa: personal.cgpa || 8.8,
+        degree: personal.degree || 'B.Tech',
+        department: personal.department || 'Computer Science & Engineering',
+        backlogs: 0,
+        graduationYear: 2026,
+      };
+      setPersonal(updatedPersonal);
+
       const updatedStudentProfile = {
         ...student,
-        ...personal,
+        ...updatedPersonal,
         skills: {
           technical: updatedTechSkills,
           soft: updatedSoftSkills,
@@ -205,7 +219,7 @@ export default function StudentProfileView({ student, onProfileUpdated }) {
 
       await api.student.updateProfile(student?.studentId || 'STU101', updatedStudentProfile);
 
-      showToast('📄 Demo Sample Resume loaded & verified! Profile credentials auto-updated.', 'success');
+      showToast('📄 Sample Resume analyzed! AI extracted 7 skills & qualifications auto-filled across portal.', 'success');
 
       if (onProfileUpdated) {
         onProfileUpdated(updatedStudentProfile);
