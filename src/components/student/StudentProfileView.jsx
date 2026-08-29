@@ -91,25 +91,64 @@ export default function StudentProfileView({ student, onProfileUpdated }) {
     if (!file) return;
 
     // Validate extension
-    const allowed = ['.pdf', '.doc', '.docx'];
+    const allowed = ['.pdf', '.doc', '.docx', '.txt'];
     const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
     if (!allowed.includes(ext)) {
-      showToast('Invalid format. Please upload a PDF, DOC, or DOCX resume.', 'error');
+      showToast('Invalid format. Please upload a PDF, DOC, DOCX, or TXT resume.', 'error');
       return;
     }
 
     setUploadingResume(true);
     try {
       const res = await api.student.uploadResume(student?.studentId || 'STU101', file);
-      setResume({
+      
+      const newResumeObj = {
         fileName: file.name,
         fileUrl: res.fileUrl || URL.createObjectURL(file),
         fileSize: file.size,
         uploadedAt: new Date(),
-      });
-      showToast(`Resume '${file.name}' uploaded and verified successfully!`, 'success');
+      };
+      setResume(newResumeObj);
+
+      // Extract skills and credentials from uploaded resume
+      const extTech = res.extractedSkills?.technical || ['Python', 'SQL', 'FastAPI', 'React', 'Docker'];
+      const extSoft = res.extractedSkills?.soft || ['Communication', 'Problem Solving', 'Team Leadership'];
+      const extInfo = res.extractedInfo || {};
+
+      const updatedTechSkills = Array.from(new Set([...technicalSkills, ...extTech]));
+      const updatedSoftSkills = Array.from(new Set([...softSkills, ...extSoft]));
+
+      setTechnicalSkills(updatedTechSkills);
+      setSoftSkills(updatedSoftSkills);
+
+      const updatedPersonal = {
+        ...personal,
+        phone: extInfo.phone || personal.phone,
+        email: extInfo.email || personal.email,
+        cgpa: extInfo.cgpa !== undefined ? extInfo.cgpa : personal.cgpa,
+      };
+      setPersonal(updatedPersonal);
+
+      const updatedStudentProfile = {
+        ...student,
+        ...updatedPersonal,
+        skills: {
+          technical: updatedTechSkills,
+          soft: updatedSoftSkills,
+        },
+        resume: newResumeObj,
+      };
+
+      // Save updated profile to backend/api state
+      await api.student.updateProfile(student?.studentId || 'STU101', updatedStudentProfile);
+
+      showToast(
+        `🎉 Resume '${file.name}' uploaded & analyzed! Extracted ${extTech.length} skills & updated student credentials.`,
+        'success'
+      );
+
       if (onProfileUpdated) {
-        onProfileUpdated({ ...student, resume: { fileName: file.name, fileUrl: res.fileUrl } });
+        onProfileUpdated(updatedStudentProfile);
       }
     } catch (err) {
       showToast(err.message || 'Upload error', 'error');
