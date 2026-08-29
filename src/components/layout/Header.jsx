@@ -7,6 +7,7 @@ export default function Header({
   currentRole = 'student',
   onToggleRole,
   onOpenAuth,
+  onLogout,
   notifications = [],
   onNavigateTab,
   searchQuery,
@@ -181,23 +182,36 @@ export default function Header({
           )}
         </div>
 
-        {/* User Profile / Auth Toggle */}
-        <div
-          onClick={onOpenAuth}
-          className="flex items-center gap-2.5 pl-3 border-l border-slate-200 cursor-pointer hover:opacity-80 transition-opacity"
-          title="Click to manage account or switch user"
-        >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-600 flex items-center justify-center text-white text-xs font-black shadow-sm">
-            {currentUser?.name ? currentUser.name.split(' ').map((n) => n[0]).join('') : currentRole === 'student' ? 'RV' : 'DS'}
+        {/* User Profile & Logout / Switch Account */}
+        <div className="flex items-center gap-2 pl-3 border-l border-slate-200">
+          <div
+            onClick={onOpenAuth}
+            className="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition-opacity"
+            title="Click to manage profile details"
+          >
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-600 flex items-center justify-center text-white text-xs font-black shadow-sm">
+              {currentUser?.name ? currentUser.name.split(' ').map((n) => n[0]).join('') : currentRole === 'student' ? 'SC' : 'PA'}
+            </div>
+            <div className="hidden sm:block text-left">
+              <p className="text-xs font-bold text-slate-900 leading-tight">
+                {currentUser?.name || (currentRole === 'student' ? 'Student Candidate' : 'Placement Admin')}
+              </p>
+              <p className="text-[10px] font-bold text-indigo-600">
+                {currentRole === 'student' ? (currentUser?.studentId || 'STU101 (Student)') : 'Placement Head'}
+              </p>
+            </div>
           </div>
-          <div className="hidden sm:block text-left">
-            <p className="text-xs font-bold text-slate-900 leading-tight">
-              {currentUser?.name || (currentRole === 'student' ? 'Rahul Verma' : 'Dr. Sharma')}
-            </p>
-            <p className="text-[10px] font-bold text-indigo-600">
-              {currentRole === 'student' ? (currentUser?.studentId || 'STU101 (Student)') : 'Placement Head'}
-            </p>
-          </div>
+
+          <button
+            onClick={() => {
+              if (onLogout) onLogout();
+              else onOpenAuth();
+            }}
+            className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors ml-1 cursor-pointer"
+            title="Logout / Switch Account"
+          >
+            <Icon name="x" className="w-4 h-4" />
+          </button>
         </div>
 
       </div>

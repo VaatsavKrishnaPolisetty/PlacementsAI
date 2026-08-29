@@ -129,6 +129,19 @@ function AppContent() {
     setActiveTab('dashboard');
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('placements_user');
+    setCurrentUser({
+      id: 'STU101',
+      studentId: 'STU101',
+      name: '',
+      email: '',
+      role: 'student',
+    });
+    setIsAuthModalOpen(true);
+    showToast('Logged out successfully. Please sign in to continue.', 'info');
+  };
+
   const handleMarkRead = async (notifId) => {
     await api.notifications.markAsRead(notifId);
     setNotifications((prev) =>
@@ -152,6 +165,7 @@ function AppContent() {
         currentRole={currentRole}
         onToggleRole={handleToggleRole}
         onOpenAuth={() => setIsAuthModalOpen(true)}
+        onLogout={handleLogout}
         notifications={notifications}
         onNavigateTab={(tab) => setActiveTab(tab)}
         searchQuery={searchQuery}

@@ -144,11 +144,18 @@ export function useCardHoverPhysics(cardRef) {
 /**
  * Hook for smooth modal popup animation.
  */
-export function useModalEntrance(modalRef, backdropRef) {
+export function useModalEntrance(modalRef, backdropRef, onClose) {
   useEffect(() => {
     // Lock background body scrolling while modal popup is open
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && typeof onClose === 'function') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
 
     if (backdropRef?.current) {
       backdropRef.current.style.position = 'fixed';
@@ -197,6 +204,7 @@ export function useModalEntrance(modalRef, backdropRef) {
 
     return () => {
       document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [modalRef, backdropRef]);
+  }, [modalRef, backdropRef, onClose]);
 }
