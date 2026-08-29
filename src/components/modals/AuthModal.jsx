@@ -6,6 +6,7 @@ import api from '../../services/api';
 
 export default function AuthModal({ isOpen, onClose, onAuthSuccess, canClose = true }) {
   const { showToast } = useToast();
+  const [selectedRole, setSelectedRole] = useState('student'); // 'student' | 'admin'
   const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
   const modalRef = useRef(null);
@@ -20,6 +21,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, canClose = t
     email: '',
     password: '',
     department: 'Computer Science & Engineering',
+    designation: 'Training & Placement Officer',
     year: 4,
     phone: '',
     degree: 'B.Tech',
@@ -40,18 +42,20 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, canClose = t
         const res = await api.auth.login('tpo@placement.edu', 'admin123', 'admin');
         const userWithCustomName = {
           ...res.user,
-          name: formData.fullName.trim() || res.user.name || 'Dr. Sharma (TPO)',
+          role: 'admin',
+          name: formData.fullName.trim() || 'Dr. Sharma (Head of Placement)',
         };
-        showToast(`Logged in as ${userWithCustomName.name}`, 'success');
+        showToast(`Logged in as Placement Officer (${userWithCustomName.name})`, 'success');
         onAuthSuccess(userWithCustomName);
         onClose();
       } else {
         const res = await api.auth.login('STU101', 'password123', 'student');
         const userWithCustomName = {
           ...res.user,
-          name: formData.fullName.trim() || res.user.name || 'Student Candidate',
+          role: 'student',
+          name: formData.fullName.trim() || 'Student Candidate',
         };
-        showToast(`Logged in as ${userWithCustomName.name}`, 'success');
+        showToast(`Logged in as Student (${userWithCustomName.name})`, 'success');
         onAuthSuccess(userWithCustomName);
         onClose();
       }
@@ -67,22 +71,25 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, canClose = t
     setLoading(true);
     try {
       let finalUser;
+      const isTPO = selectedRole === 'admin';
       if (isRegister) {
-        const res = await api.auth.register(formData);
+        const res = await api.auth.register({ ...formData, role: isTPO ? 'admin' : 'student' });
         finalUser = {
           ...res.user,
+          role: isTPO ? 'admin' : 'student',
           name: formData.fullName.trim() || res.user.name,
-          studentId: formData.studentId || res.user.studentId || 'STU101',
-          department: formData.department || 'Computer Science & Engineering',
+          studentId: isTPO ? 'TPO_ADMIN' : (formData.studentId || res.user.studentId || 'STU101'),
+          department: formData.department || 'Placement Cell',
         };
-        showToast(`Account created! Welcome, ${finalUser.name}`, 'success');
+        showToast(`Account created! Welcome ${isTPO ? 'Placement Officer' : ''}, ${finalUser.name}`, 'success');
       } else {
-        const res = await api.auth.login(formData.email || formData.studentId, formData.password);
+        const res = await api.auth.login(formData.email || formData.studentId, formData.password, isTPO ? 'admin' : 'student');
         finalUser = {
           ...res.user,
-          name: formData.fullName.trim() || res.user.name || formData.email.split('@')[0],
-          studentId: formData.studentId || res.user.studentId || 'STU101',
-          department: formData.department || res.user.department || 'Computer Science & Engineering',
+          role: isTPO ? 'admin' : 'student',
+          name: formData.fullName.trim() || res.user.name || (formData.email ? formData.email.split('@')[0] : (isTPO ? 'TPO Officer' : 'Student Candidate')),
+          studentId: isTPO ? 'TPO_ADMIN' : (formData.studentId || res.user.studentId || 'STU101'),
+          department: formData.department || res.user.department || (isTPO ? 'Placement Cell' : 'Computer Science & Engineering'),
         };
         showToast(`Welcome back, ${finalUser.name}!`, 'success');
       }
@@ -119,6 +126,34 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, canClose = t
           )}
         </div>
 
+        {/* Role Selector Tabs */}
+        <div className="p-1 bg-slate-100/90 border-b border-slate-200 flex items-center gap-1 px-4 py-2 text-xs">
+          <button
+            type="button"
+            onClick={() => setSelectedRole('student')}
+            className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              selectedRole === 'student'
+                ? 'bg-indigo-600 text-white shadow-sm font-extrabold'
+                : 'text-slate-600 hover:bg-slate-200/60'
+            }`}
+          >
+            <Icon name="user" className="w-3.5 h-3.5" />
+            Student Login
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedRole('admin')}
+            className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              selectedRole === 'admin'
+                ? 'bg-indigo-900 text-white shadow-sm font-extrabold'
+                : 'text-slate-600 hover:bg-slate-200/60'
+            }`}
+          >
+            <Icon name="shield-check" className="w-3.5 h-3.5" />
+            TPO / Staff Login
+          </button>
+        </div>
+
         {/* Quick Demo Logins Bar */}
         <div className="bg-indigo-50/70 p-3.5 border-b border-indigo-100 flex items-center justify-between text-xs">
           <span className="font-bold text-indigo-950">🚀 Fast Demo Sign-In:</span>
@@ -126,16 +161,16 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, canClose = t
             <button
               type="button"
               onClick={() => handleQuickLogin('student')}
-              className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition-colors shadow-xs"
+              className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition-colors shadow-xs cursor-pointer"
             >
               Demo Student
             </button>
             <button
               type="button"
               onClick={() => handleQuickLogin('admin')}
-              className="px-2.5 py-1 rounded-lg bg-slate-800 text-white font-bold hover:bg-slate-900 transition-colors shadow-xs"
+              className="px-2.5 py-1 rounded-lg bg-slate-800 text-white font-bold hover:bg-slate-900 transition-colors shadow-xs cursor-pointer"
             >
-              Admin / TPO
+              Demo TPO
             </button>
           </div>
         </div>

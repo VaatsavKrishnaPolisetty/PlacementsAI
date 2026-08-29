@@ -125,7 +125,7 @@ export default function StudentJobsView({
           return (
             <div
               key={jobId}
-              className="p-6 rounded-3xl border border-slate-200 bg-white shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow"
+              className="p-6 rounded-3xl border border-slate-200 bg-white shadow-sm flex flex-col justify-between space-y-4 hover:shadow-xl hover:-translate-y-1 hover:border-indigo-300 transition-all duration-300 animate-card"
             >
               <div className="space-y-3">
                 {/* Header */}

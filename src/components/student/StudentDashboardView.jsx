@@ -65,11 +65,11 @@ export default function StudentDashboardView({
         <div className="absolute right-0 top-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
       </div>
 
-      {/* Summary KPI Cards */}
+      {/* Summary KPI Cards with Animations */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
         <div
           onClick={() => onNavigate('applications')}
-          className="card-interactive p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs cursor-pointer"
+          className="card-interactive p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-lg hover:-translate-y-1 hover:border-blue-300 transition-all duration-300 cursor-pointer animate-card"
         >
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs font-bold text-slate-500">Total Applied</span>
@@ -83,7 +83,7 @@ export default function StudentDashboardView({
 
         <div
           onClick={() => onNavigate('applications')}
-          className="card-interactive p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs cursor-pointer"
+          className="card-interactive p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-lg hover:-translate-y-1 hover:border-indigo-300 transition-all duration-300 cursor-pointer animate-card"
         >
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs font-bold text-slate-500">Shortlisted</span>
@@ -97,7 +97,7 @@ export default function StudentDashboardView({
 
         <div
           onClick={() => onNavigate('interviews')}
-          className="card-interactive p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs cursor-pointer"
+          className="card-interactive p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-lg hover:-translate-y-1 hover:border-purple-300 transition-all duration-300 cursor-pointer animate-card"
         >
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs font-bold text-slate-500">Interviews</span>
@@ -111,7 +111,7 @@ export default function StudentDashboardView({
 
         <div
           onClick={() => onNavigate('applications')}
-          className="card-interactive p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs cursor-pointer"
+          className="card-interactive p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-lg hover:-translate-y-1 hover:border-emerald-300 transition-all duration-300 cursor-pointer animate-card"
         >
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs font-bold text-slate-500">Selected</span>
@@ -125,7 +125,7 @@ export default function StudentDashboardView({
 
         <div
           onClick={() => onNavigate('notifications')}
-          className="card-interactive p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs cursor-pointer"
+          className="card-interactive p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-lg hover:-translate-y-1 hover:border-rose-300 transition-all duration-300 cursor-pointer animate-card"
         >
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs font-bold text-slate-500">Alerts</span>
