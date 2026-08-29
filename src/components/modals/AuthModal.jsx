@@ -4,7 +4,7 @@ import { useToast } from '../common/ToastContext';
 import { useModalEntrance } from '../../animations/useGsapAnimations';
 import api from '../../services/api';
 
-export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
+export default function AuthModal({ isOpen, onClose, onAuthSuccess, canClose = true }) {
   const { showToast } = useToast();
   const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -109,12 +109,14 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
             </h3>
             <p className="text-xs text-indigo-200">AI Campus Placement & Interview Coordination Portal</p>
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 flex items-center justify-center transition-colors"
-          >
-            <Icon name="x" className="w-4 h-4" />
-          </button>
+          {canClose && (
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 flex items-center justify-center transition-colors"
+            >
+              <Icon name="x" className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         {/* Quick Demo Logins Bar */}

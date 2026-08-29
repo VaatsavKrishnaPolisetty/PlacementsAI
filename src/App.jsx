@@ -154,6 +154,20 @@ function AppContent() {
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true, read: true })));
   };
 
+  // Render Login Page 1st when opening the site if unauthenticated
+  if (isAuthModalOpen || !currentUser?.name) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <AuthModal
+          isOpen={true}
+          canClose={Boolean(currentUser?.name)}
+          onClose={() => setIsAuthModalOpen(false)}
+          onAuthSuccess={handleAuthSuccess}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex">
       {/* Fixed Dynamic Sidebar */}
@@ -194,12 +208,15 @@ function AppContent() {
         </div>
       </main>
 
-      {/* Auth Modal for Student Registration / Login */}
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onAuthSuccess={handleAuthSuccess}
-      />
+      {/* Auth Modal for switching accounts */}
+      {isAuthModalOpen && (
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          canClose={true}
+          onClose={() => setIsAuthModalOpen(false)}
+          onAuthSuccess={handleAuthSuccess}
+        />
+      )}
     </div>
   );
 }
