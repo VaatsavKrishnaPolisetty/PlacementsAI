@@ -154,10 +154,15 @@ function AppContent() {
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true, read: true })));
   };
 
-  // Render Login Page 1st when opening the site if unauthenticated
+  // Render Login Page 1st when opening the site if unauthenticated with Glassmorphism UI
   if (isAuthModalOpen || !currentUser?.name) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen w-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Ambient Glassmorphism Background Glowing Orbs */}
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-indigo-500/25 rounded-full blur-3xl pointer-events-none animate-pulse" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-purple-500/25 rounded-full blur-3xl pointer-events-none animate-pulse" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
+
         <AuthModal
           isOpen={true}
           canClose={Boolean(currentUser?.name)}

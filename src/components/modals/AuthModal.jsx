@@ -96,8 +96,8 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, canClose = t
   };
 
   return (
-    <div ref={backdropRef} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto w-screen h-screen">
-      <div ref={modalRef} className="my-auto relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+    <div ref={backdropRef} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto w-screen h-screen">
+      <div ref={modalRef} className="my-auto relative w-full max-w-md bg-white/90 backdrop-blur-2xl border border-white/60 shadow-2xl shadow-indigo-950/50 rounded-3xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-start justify-between">
           <div>
