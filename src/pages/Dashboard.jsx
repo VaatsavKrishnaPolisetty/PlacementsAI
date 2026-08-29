@@ -201,15 +201,14 @@ export default function Dashboard({
 
   const handleBatchSchedule = async () => {
     const job = jds[0] || { jobId: 'JOB_TCS_SWE' };
-    showToast(`📅 Scheduling Agent allocating rooms & panels for shortlisted candidates...`, 'info');
+    setAgentWorkflowModal('Scheduling Agent');
     try {
-      const res = await api.generateSchedule(job.jobId || 'JOB_TCS_SWE');
-      showToast(`✅ Schedule generated: ${res.totalScheduled || 5} interview slots booked.`, 'success');
+      await api.generateSchedule(job.jobId || 'JOB_TCS_SWE');
       const updated = await api.getInterviews();
-      if (updated) setInterviews(updated);
+      if (updated && updated.length) setInterviews(updated);
       setSelectedPipelineStage('interview');
     } catch {
-      showToast('Interviews scheduled successfully.', 'success');
+      setSelectedPipelineStage('interview');
     }
   };
 

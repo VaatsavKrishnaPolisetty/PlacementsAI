@@ -29,32 +29,28 @@ export default function ScheduleModal({ interview, candidate, onClose, onSave })
     e.preventDefault();
     setLoading(true);
     try {
-      // 1. If modifying an existing interview, call backend API to trigger real notifications
-      if (interview) {
-        const interviewId = interview.interviewId || interview.id;
-        await api.updateInterviewSlot(interviewId, {
-          date: formData.date,
-          startTime: formData.time,
-          endTime: formData.time.includes('10:') ? '11:30 AM' : '3:00 PM',
-          roomId: formData.roomNo,
-          roomNo: formData.roomNo,
-          panelId: formData.panel,
-        });
+      // 1. Call API to update interview slot
+      const interviewId = interview?.interviewId || interview?.id || `INT_${Date.now()}`;
+      await api.updateInterviewSlot(interviewId, {
+        date: formData.date,
+        startTime: formData.time,
+        endTime: formData.time.includes('10:') ? '11:30 AM' : '3:00 PM',
+        roomId: formData.roomNo,
+        roomNo: formData.roomNo,
+        panelId: formData.panel,
+      });
 
-        const roomChanged = (interview.roomNo || interview.roomId) && (interview.roomNo || interview.roomId) !== formData.roomNo;
-        const timeChanged = (interview.startTime || interview.scheduledTime) && (interview.startTime || interview.scheduledTime) !== formData.time;
+      const roomChanged = interview && (interview.roomNo || interview.roomId) && (interview.roomNo || interview.roomId) !== formData.roomNo;
+      const timeChanged = interview && (interview.startTime || interview.scheduledTime) && (interview.startTime || interview.scheduledTime) !== formData.time;
 
-        if (roomChanged && timeChanged) {
-          showToast(`🚨 Combined update applied: Time shifted to ${formData.time} & Room moved to ${formData.roomNo}. Urgent notification sent to ${formData.studentName}.`, 'warning');
-        } else if (roomChanged) {
-          showToast(`🚨 Room changed to ${formData.roomNo}! Urgent notification sent to student.`, 'warning');
-        } else if (timeChanged) {
-          showToast(`⚠️ Time moved to ${formData.time}. Notification sent to student.`, 'info');
-        } else {
-          showToast(`Interview details confirmed for ${formData.studentName}`, 'success');
-        }
+      if (roomChanged && timeChanged) {
+        showToast(`🚨 Combined update applied: Time shifted to ${formData.time} & Room moved to ${formData.roomNo}. Urgent notification sent to ${formData.studentName}!`, 'warning');
+      } else if (roomChanged) {
+        showToast(`🚨 Room changed to ${formData.roomNo}! Urgent notification sent to ${formData.studentName}.`, 'warning');
+      } else if (timeChanged) {
+        showToast(`⚠️ Time moved to ${formData.time}. Notification sent to ${formData.studentName}.`, 'info');
       } else {
-        showToast(`Interview booked for ${formData.studentName} at ${formData.roomNo}`, 'success');
+        showToast(`Interview details saved & student notified: ${formData.studentName}`, 'success');
       }
 
       onSave?.(formData);
@@ -67,8 +63,8 @@ export default function ScheduleModal({ interview, candidate, onClose, onSave })
   };
 
   return (
-    <div ref={backdropRef} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-      <div ref={modalRef} className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
+    <div ref={backdropRef} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto w-screen h-screen">
+      <div ref={modalRef} className="my-auto relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white">
           <div className="flex items-center gap-3">

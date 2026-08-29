@@ -146,30 +146,36 @@ export function useCardHoverPhysics(cardRef) {
  */
 export function useModalEntrance(modalRef, backdropRef) {
   useEffect(() => {
-    if (!modalRef.current) return;
+    // Lock background body scrolling while modal popup is open
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
 
-    const ctx = gsap.context(() => {
-      if (backdropRef?.current) {
-        gsap.fromTo(
-          backdropRef.current,
-          { opacity: 0 },
-          { opacity: 1, duration: 0.25, ease: EASINGS.smooth }
-        );
-      }
-
-      gsap.fromTo(
-        modalRef.current,
-        { opacity: 0, scale: 0.94, y: 15 },
-        {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          duration: 0.35,
-          ease: EASINGS.bounceOut,
+    if (modalRef.current) {
+      const ctx = gsap.context(() => {
+        if (backdropRef?.current) {
+          gsap.fromTo(
+            backdropRef.current,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.25, ease: EASINGS.smooth }
+          );
         }
-      );
-    }, modalRef);
 
-    return () => ctx.revert();
+        gsap.fromTo(
+          modalRef.current,
+          { opacity: 0, scale: 0.94, y: 15 },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.35,
+            ease: EASINGS.bounceOut,
+          }
+        );
+      }, modalRef);
+    }
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
   }, [modalRef, backdropRef]);
 }

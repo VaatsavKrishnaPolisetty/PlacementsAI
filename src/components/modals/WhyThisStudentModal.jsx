@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Icon from '../common/Icons';
+import { useModalEntrance } from '../../animations/useGsapAnimations';
 
 export default function WhyThisStudentModal({ student, jd, matchDetail, readinessPlan, onClose, onSchedule }) {
   const [activeTab, setActiveTab] = useState('pillars');
@@ -56,9 +57,14 @@ export default function WhyThisStudentModal({ student, jd, matchDetail, readines
     { skill: 'SQL & DB Optimization', source: 'experience', title: 'Internship at TechCorp', description: 'Engineered high-throughput query pipelines handling 10k req/sec' },
   ];
 
+  const modalRef = useRef(null);
+  const backdropRef = useRef(null);
+
+  useModalEntrance(modalRef, backdropRef);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200/90 w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
+    <div ref={backdropRef} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md overflow-y-auto w-screen h-screen">
+      <div ref={modalRef} className="my-auto bg-white rounded-3xl shadow-2xl border border-slate-200/90 w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
         
         {/* Modal Header */}
         <div className="p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between">

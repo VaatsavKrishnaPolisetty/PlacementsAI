@@ -3,12 +3,20 @@ import Icon from '../common/Icons';
 import { useToast } from '../common/ToastContext';
 import { useModalEntrance } from '../../animations/useGsapAnimations';
 
-const WORKFLOW_STEPS = [
+const MATCHING_WORKFLOW_STEPS = [
   { title: 'Ingesting Student Resumes & Course Transcripts', status: 'done' },
   { title: 'Parsing Skill Embeddings & ATS Scoring Matrices', status: 'processing' },
   { title: 'Evaluating JD Eligibility & Branch Prerequisites', status: 'pending' },
   { title: 'Synthesizing Optimal Candidate Match Rankings', status: 'pending' },
   { title: 'Broadcasting Automated Calendar & Room Invites', status: 'pending' },
+];
+
+const SCHEDULING_WORKFLOW_STEPS = [
+  { title: 'Ingesting Candidate Shortlist & Drive Requirements', status: 'done' },
+  { title: 'Evaluating Panel & Room Venue Availabilities', status: 'processing' },
+  { title: 'Running Autonomous Conflict Guard & Timetable Solver', status: 'pending' },
+  { title: 'Allocating Optimized Interview Slots & Rooms', status: 'pending' },
+  { title: 'Publishing Final Schedule & Student In-App Alerts', status: 'pending' },
 ];
 
 export default function AgentWorkflowModal({ agentType = 'Matching Agent', onClose, onComplete }) {
@@ -19,34 +27,41 @@ export default function AgentWorkflowModal({ agentType = 'Matching Agent', onClo
   const modalRef = useRef(null);
   const backdropRef = useRef(null);
 
+  const steps = agentType.toLowerCase().includes('schedul') ? SCHEDULING_WORKFLOW_STEPS : MATCHING_WORKFLOW_STEPS;
+
   useModalEntrance(modalRef, backdropRef);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 100) {
+        const next = prev + 25;
+        if (next >= 100) {
           clearInterval(timer);
           setIsFinished(true);
+          setCurrentStep(steps.length - 1);
           return 100;
         }
-        return prev + 25;
+        return next;
       });
 
-      setCurrentStep((prev) => (prev < WORKFLOW_STEPS.length - 1 ? prev + 1 : prev));
-    }, 900);
+      setCurrentStep((prev) => (prev < steps.length - 1 ? prev + 1 : prev));
+    }, 600);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [steps.length]);
 
   const handleFinish = () => {
-    showToast(`Autonomous workflow finished: 38 candidates matched & verified!`, 'success');
+    showToast(
+      `🎉 ${agentType} execution completed! ${agentType.toLowerCase().includes('schedul') ? 'Interview roster allocated & notifications dispatched.' : '38 candidates matched & verified!'}`,
+      'success'
+    );
     onComplete?.();
     onClose();
   };
 
   return (
-    <div ref={backdropRef} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-      <div ref={modalRef} className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
+    <div ref={backdropRef} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto w-screen h-screen">
+      <div ref={modalRef} className="my-auto relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-indigo-900 text-white">
           <div className="flex items-center gap-3">
@@ -83,7 +98,7 @@ export default function AgentWorkflowModal({ agentType = 'Matching Agent', onClo
 
           {/* Steps List */}
           <div className="space-y-3">
-            {WORKFLOW_STEPS.map((step, idx) => {
+            {steps.map((step, idx) => {
               const isDone = idx < currentStep || isFinished;
               const isCurrent = idx === currentStep && !isFinished;
 
